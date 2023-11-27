@@ -1,68 +1,9 @@
 import { Component } from "react";
 
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import { Menu } from "antd";
+import TodoList from "./components/TodoList.jsx";
+import TodoContext from "./context/todoContext.js";
+import Header from "./components/Header.jsx";
 
-const items = [
-  {
-    label: "Navigation One",
-    key: "mail",
-    icon: <MailOutlined />,
-  },
-  {
-    label: "Navigation Two",
-    key: "app",
-    icon: <AppstoreOutlined />,
-    disabled: true,
-  },
-  {
-    label: "Navigation Three - Submenu",
-    key: "SubMenu",
-    icon: <SettingOutlined />,
-    children: [
-      {
-        type: "group",
-        label: "Item 1",
-        children: [
-          {
-            label: "Option 1",
-            key: "setting:1",
-          },
-          {
-            label: "Option 2",
-            key: "setting:2",
-          },
-        ],
-      },
-      {
-        type: "group",
-        label: "Item 2",
-        children: [
-          {
-            label: "Option 3",
-            key: "setting:3",
-          },
-          {
-            label: "Option 4",
-            key: "setting:4",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: (
-      <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
-        Navigation Four - Link
-      </a>
-    ),
-    key: "alipay",
-  },
-];
 
 class App extends Component {
   constructor(props) {
@@ -72,6 +13,9 @@ class App extends Component {
       todos: [],
       name: 'Pesho'
     }
+
+    this.toggleTodo = this.toggleTodo.bind(this); // to be sure that we are working with the correct this
+    this.deleteTodo = this.deleteTodo.bind(this);
   }
 
   componentDidMount() {
@@ -83,14 +27,29 @@ class App extends Component {
           todos: Object.values(result)
         });
       });
+  };
+
+  toggleTodo(todoId) {
+    this.setState({
+      todos:this.state.todos.map(todo => todo.id === todoId ? {...todo, isCompleted: !todo.isCompleted} : todo)
+    })
+  }
+
+  deleteTodo(todoId) {
+    this.setState( {
+      todos: this.state.todos.filter(todo => todo.id !== todoId),
+    });
   }
 
   render() {
     //method - render
     return (
-      <>
-        <Menu mode="horizontal" items={items} />
-      </>
+      <TodoContext.Provider value={{name: this.state.name, todos: this.state.todos}}>
+      <Header/>
+
+       <TodoList todos={this.state.todos} deleteTodo={this.deleteTodo.bind(this)}/>
+
+      </TodoContext.Provider>
     );
   }
 }
