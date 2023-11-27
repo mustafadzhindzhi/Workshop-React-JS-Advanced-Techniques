@@ -1,4 +1,4 @@
-import {Component} from "react";
+import { Component } from "react";
 
 import {
   AppstoreOutlined,
@@ -65,7 +65,28 @@ const items = [
 ];
 
 class App extends Component {
-  render() { //method - render
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      todos: [],
+      name: 'Pesho'
+    }
+  }
+
+  componentDidMount() {
+    console.log(`componentDidMount`);
+    fetch("http://localhost:3030/jsonstore/todos")
+      .then((res) => res.json())
+      .then((result) => {
+        this.setState({
+          todos: Object.values(result)
+        });
+      });
+  }
+
+  render() {
+    //method - render
     return (
       <>
         <Menu mode="horizontal" items={items} />
